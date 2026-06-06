@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glamour Minesweeper 🍓</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Переключатель сложности -->
+    <div class="difficulty-selector">
+        <button class="diff-btn active" data-mode="basic">🍓 Базовый гламур</button>
+        <button class="diff-btn" data-mode="luxury">💎 Люксовый гламур</button>
+    </div>
+
+    <div class="game-container">
+        <header class="game-header">
+            <div class="counter mine-counter" id="mine-counter">040</div>
+            <button class="reset-btn" id="reset-btn" aria-label="Начать заново">
+                <span class="reset-icon">🙂</span>
+            </button>
+            <div class="counter timer" id="timer">000</div>
+        </header>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- Оверлей победы -->
+    <div class="overlay" id="win-overlay">
+        <div class="overlay-content win-content">
+            <div class="overlay-text">Мур мур гламур</div>
+            <div class="overlay-emoji">✨</div>
+        </div>
+    </div>
+
+    <!-- Оверлей поражения -->
+    <div class="overlay" id="lose-overlay">
+        <div class="overlay-content lose-content">
+            <div class="overlay-text">Пу-пу-пу</div>
+            <div class="overlay-emoji">😵💥</div>
+        </div>
+    </div>
+
+    <!-- Canvas для конфетти -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="app.js"></script>
+</body>
+</html>
