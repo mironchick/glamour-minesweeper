@@ -13,6 +13,12 @@ let ROWS = MODES[currentMode].rows;
 let COLS = MODES[currentMode].cols;
 let MINES_COUNT = MODES[currentMode].mines;
 
+// Настройки
+type AutoOpenMode = 'double' | 'single';
+type Theme = 'light' | 'dark';
+let autoOpenMode: AutoOpenMode = loadAutoOpenSetting();
+let currentTheme: Theme = loadThemeSetting();
+
 // Состояние игры
 let board: Cell[][] = [];
 let gameOver = false;
@@ -28,10 +34,17 @@ const timerElement = document.getElementById('timer') as HTMLDivElement;
 const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
 const resetIcon = resetBtn.querySelector('.reset-icon') as HTMLSpanElement;
 const diffButtons = document.querySelectorAll('.diff-btn') as NodeListOf<HTMLButtonElement>;
+const settingsBtn = document.getElementById('settings-btn') as HTMLButtonElement;
+const settingsModal = document.getElementById('settings-modal') as HTMLDivElement;
+const modalClose = document.getElementById('modal-close') as HTMLButtonElement;
+const autoOpenRadios = document.querySelectorAll('input[name="auto-open"]') as NodeListOf<HTMLInputElement>;
+const themeRadios = document.querySelectorAll('input[name="theme"]') as NodeListOf<HTMLInputElement>;
+const recordDisplay = document.getElementById('record-display') as HTMLDivElement;
+const recordTime = document.getElementById('record-time') as HTMLSpanElement;
 
 // Canvas для конфетти
 const confettiCanvas = document.getElementById('confetti-canvas') as HTMLCanvasElement;
-const confettiCtx = confettiCanvas.getContext('2d');
+const confettiCtx = confettiCanvas.getContext('2d')!;
 let confettiAnimationId: number | null = null;
 let confettiPieces: ConfettiPiece[] = [];
 
@@ -60,9 +73,77 @@ interface ConfettiPiece {
     rotationSpeed: number;
 }
 
+// =========================================
+// localStorage функции
+// =========================================
+
+function loadAutoOpenSetting(): AutoOpenMode {
+    const saved = localStorage.getItem('glamour-minesweeper-auto-open');
+    return (saved as AutoOpenMode) || 'double';
+}
+
+function saveAutoOpenSetting(mode: AutoOpenMode): void {
+    localStorage.setItem('glamour-minesweeper-auto-open', mode);
+}
+
+function loadThemeSetting(): Theme {
+    const saved = localStorage.getItem('glamour-minesweeper-theme');
+    return (saved as Theme) || 'light';
+}
+
+function saveThemeSetting(theme: Theme): void {
+    localStorage.setItem('glamour-minesweeper-theme', theme);
+}
+
+function applyTheme(theme: Theme): void {
+    if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.remove('dark-theme');
+    }
+}
+
+function getRecordKey(): string {
+    return `glamour-minesweeper-record-${currentMode}`;
+}
+
+function loadRecord(): number | null {
+    const saved = localStorage.getItem(getRecordKey());
+    return saved ? parseInt(saved, 10) : null;
+}
+
+function saveRecord(time: number): void {
+    localStorage.setItem(getRecordKey(), time.toString());
+}
+
+function updateRecordDisplay(): void {
+    const record = loadRecord();
+    if (record !== null) {
+        recordTime.textContent = formatTime(record);
+    } else {
+        recordTime.textContent = '---';
+    }
+}
+
+function formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function checkAndUpdateRecord(): void {
+    const currentRecord = loadRecord();
+    if (currentRecord === null || timer < currentRecord) {
+        saveRecord(timer);
+        updateRecordDisplay();
+    }
+}
+
+// =========================================
 // Инициализация игры
+// =========================================
+
 function initGame(): void {
-    // Сброс состояния
     board = [];
     gameOver = false;
     firstClick = true;
@@ -71,23 +152,22 @@ function initGame(): void {
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = null;
 
-    // Остановка конфетти и скрытие оверлеев
     stopConfetti();
     document.getElementById('win-overlay')?.classList.remove('show');
     document.getElementById('lose-overlay')?.classList.remove('show');
 
-    // Динамическая установка размеров сетки
     gridElement.style.gridTemplateColumns = `repeat(${COLS}, 32px)`;
     gridElement.style.gridTemplateRows = `repeat(${ROWS}, 32px)`;
 
-    // Сброс UI
     gridElement.innerHTML = '';
     mineCounterElement.textContent = formatNumber(MINES_COUNT);
     timerElement.textContent = '000';
     resetIcon.textContent = '🙂';
     document.querySelector('.game-container')?.classList.remove('game-over', 'game-won');
 
-    // Создание пустой сетки
+    updateRecordDisplay();
+    applyTheme(currentTheme);
+
     for (let r = 0; r < ROWS; r++) {
         const row: Cell[] = [];
         for (let c = 0; c < COLS; c++) {
@@ -105,15 +185,16 @@ function initGame(): void {
             cell.element.dataset.row = r.toString();
             cell.element.dataset.col = c.toString();
 
-            // Обработчики событий
             cell.element.addEventListener('click', () => handleLeftClick(cell));
             cell.element.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 handleRightClick(cell);
             });
-            cell.element.addEventListener('dblclick', () => handleDoubleClick(cell));
+            
+            if (autoOpenMode === 'double') {
+                cell.element.addEventListener('dblclick', () => handleDoubleClick(cell));
+            }
 
-            // Эффект нажатия для смайлика
             cell.element.addEventListener('mousedown', () => {
                 if (!gameOver && !cell.isRevealed && !cell.isFlagged) {
                     resetIcon.textContent = '😮';
@@ -130,7 +211,10 @@ function initGame(): void {
     }
 }
 
-// Расстановка мин (после первого клика)
+// =========================================
+// Логика игры
+// =========================================
+
 function placeMines(safeRow: number, safeCol: number): void {
     let minesPlaced = 0;
     while (minesPlaced < MINES_COUNT) {
@@ -143,7 +227,6 @@ function placeMines(safeRow: number, safeCol: number): void {
         }
     }
 
-    // Подсчет цифр вокруг мин
     for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
             if (!board[r][c].isMine) {
@@ -167,8 +250,13 @@ function countNeighborMines(r: number, c: number): number {
     return count;
 }
 
-// Обработка левого клика (открытие)
 function handleLeftClick(cell: Cell): void {
+    // В режиме одинарного клика разрешаем клики по открытым клеткам с цифрами
+    if (autoOpenMode === 'single' && cell.isRevealed && cell.neighborMines > 0) {
+        autoOpenNeighbors(cell);
+        return;
+    }
+
     if (gameOver || cell.isRevealed || cell.isFlagged) return;
 
     if (firstClick) {
@@ -186,7 +274,6 @@ function handleLeftClick(cell: Cell): void {
     checkWin();
 }
 
-// Рекурсивное открытие ячеек (Flood Fill)
 function revealCell(cell: Cell): void {
     if (cell.isRevealed || cell.isFlagged) return;
 
@@ -209,7 +296,6 @@ function revealCell(cell: Cell): void {
     }
 }
 
-// Обработка правого клика (флажок)
 function handleRightClick(cell: Cell): void {
     if (gameOver || cell.isRevealed) return;
 
@@ -220,11 +306,14 @@ function handleRightClick(cell: Cell): void {
     mineCounterElement.textContent = formatNumber(MINES_COUNT - flagsPlaced);
 }
 
-// Обработка двойного клика (chord — автооткрытие соседей)
 function handleDoubleClick(cell: Cell): void {
     if (gameOver || !cell.isRevealed || cell.neighborMines === 0) return;
+    autoOpenNeighbors(cell);
+}
 
-    // Считаем флажки вокруг
+function autoOpenNeighbors(cell: Cell): void {
+    if (!cell.isRevealed || cell.neighborMines === 0) return;
+
     let flagCount = 0;
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
@@ -236,7 +325,6 @@ function handleDoubleClick(cell: Cell): void {
         }
     }
 
-    // Если флажков ровно столько, сколько мин вокруг — открываем соседей
     if (flagCount === cell.neighborMines) {
         for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
@@ -258,7 +346,6 @@ function handleDoubleClick(cell: Cell): void {
     }
 }
 
-// Запуск таймера
 function startTimer(): void {
     if (timerInterval) return;
     timerInterval = window.setInterval(() => {
@@ -268,7 +355,6 @@ function startTimer(): void {
     }, 1000);
 }
 
-// Форматирование чисел для табло
 function formatNumber(num: number): string {
     return num.toString().padStart(3, '0');
 }
@@ -346,17 +432,16 @@ function showOverlay(type: 'win' | 'lose'): void {
         startConfetti();
     }
 
-    // Автоматическое скрытие через 3 секунды
     setTimeout(() => {
         overlay.classList.remove('show');
         if (type === 'win') {
-            setTimeout(stopConfetti, 200);
+            setTimeout(stopConfetti, 150);
         }
     }, 2000);
 }
 
 // =========================================
-// Конец игры и проверка победы
+// Конец игры
 // =========================================
 
 function triggerGameOver(isWin: boolean): void {
@@ -373,6 +458,7 @@ function triggerGameOver(isWin: boolean): void {
                 cell.element.classList.add('flagged');
             }
         });
+        checkAndUpdateRecord();
         showOverlay('win');
     } else {
         resetIcon.textContent = '😵';
@@ -418,6 +504,44 @@ diffButtons.forEach(btn => {
         MINES_COUNT = MODES[mode].mines;
 
         initGame();
+    });
+});
+
+// Настройки
+settingsBtn.addEventListener('click', () => {
+    settingsModal.classList.add('show');
+    const currentRadio = document.querySelector(`input[name="auto-open"][value="${autoOpenMode}"]`) as HTMLInputElement;
+    if (currentRadio) currentRadio.checked = true;
+    
+    const currentThemeRadio = document.querySelector(`input[name="theme"][value="${currentTheme}"]`) as HTMLInputElement;
+    if (currentThemeRadio) currentThemeRadio.checked = true;
+});
+
+modalClose.addEventListener('click', () => {
+    settingsModal.classList.remove('show');
+});
+
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+        settingsModal.classList.remove('show');
+    }
+});
+
+autoOpenRadios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        const target = e.target as HTMLInputElement;
+        autoOpenMode = target.value as AutoOpenMode;
+        saveAutoOpenSetting(autoOpenMode);
+        initGame();
+    });
+});
+
+themeRadios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        const target = e.target as HTMLInputElement;
+        currentTheme = target.value as Theme;
+        saveThemeSetting(currentTheme);
+        applyTheme(currentTheme);
     });
 });
 
