@@ -23,6 +23,14 @@
             <div class="counter timer" id="timer">000</div>
         </header>
         <div class="grid" id="grid"></div>
+        
+        <!-- Кнопка настроек -->
+        <button class="settings-btn" id="settings-btn" aria-label="Настройки">⚙️</button>
+        
+        <!-- Отображение рекорда -->
+        <div class="record-display" id="record-display">
+            🏆 Рекорд: <span id="record-time">---</span>
+        </div>
     </div>
 
     <!-- Оверлей победы -->
@@ -37,7 +45,46 @@
     <div class="overlay" id="lose-overlay">
         <div class="overlay-content lose-content">
             <div class="overlay-text">Пу-пу-пу</div>
-            <div class="overlay-emoji">😵💥</div>
+            <div class="overlay-emoji">💥</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Настройки</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label class="setting-label">Автооткрытие соседей:</label>
+                    <div class="setting-options">
+                        <label class="radio-label">
+                            <input type="radio" name="auto-open" value="double" checked>
+                            <span>Двойной клик</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="auto-open" value="single">
+                            <span>Одинарный клик (по цифре)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Тема оформления:</label>
+                    <div class="setting-options">
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="light" checked>
+                            <span>🌸 Светлая</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="dark">
+                            <span>🌙 Тёмная</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
