@@ -1,4 +1,70 @@
 /* =========================================
+   CSS Переменные для тем
+   ========================================= */
+
+:root {
+    /* Светлая тема (по умолчанию) */
+    --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #ffb6c1 100%);
+    --container-bg: #ffc0cb;
+    --container-border-light: #ffe4ec;
+    --container-border-dark: #d97091;
+    --header-bg: #ffb3c6;
+    --cell-bg: #ffb3c6;
+    --cell-bg-hover: #ffc8d6;
+    --cell-bg-active: #ffd1dc;
+    --cell-bg-revealed: #ffd1dc;
+    --cell-border-light: #ffe4ec;
+    --cell-border-dark: #d97091;
+    --cell-border-flat: #e8a0b5;
+    --grid-bg: #d97091;
+    --btn-bg: #ffc0cb;
+    --btn-bg-hover: #ffd1dc;
+    --btn-bg-active: #ff69b4;
+    --btn-text: #d97091;
+    --btn-text-active: #fff;
+    --record-color: #d97091;
+    --record-color-bold: #ff1493;
+    --modal-bg: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
+    --modal-border: #ffe4ec;
+    --modal-title: #d97091;
+    --modal-text: #8b4a6b;
+    --modal-hover-bg: rgba(255, 255, 255, 0.3);
+    --shadow-color: rgba(255, 105, 180, 0.3);
+    --shadow-hover: rgba(255, 105, 180, 0.4);
+}
+
+body.dark-theme {
+    /* Тёмная гламурная тема */
+    --bg-gradient: linear-gradient(135deg, #2d1b2e 0%, #1a0f1a 100%);
+    --container-bg: #4a2040;
+    --container-border-light: #6b3a5f;
+    --container-border-dark: #2d1525;
+    --header-bg: #3d1a35;
+    --cell-bg: #5a2a4f;
+    --cell-bg-hover: #6b3a5f;
+    --cell-bg-active: #7a4a6f;
+    --cell-bg-revealed: #3d1a35;
+    --cell-border-light: #6b3a5f;
+    --cell-border-dark: #2d1525;
+    --cell-border-flat: #4a2040;
+    --grid-bg: #2d1525;
+    --btn-bg: #4a2040;
+    --btn-bg-hover: #5a2a4f;
+    --btn-bg-active: #ff1493;
+    --btn-text: #ffb6c1;
+    --btn-text-active: #fff;
+    --record-color: #ffb6c1;
+    --record-color-bold: #ff69b4;
+    --modal-bg: linear-gradient(135deg, #4a2040 0%, #3d1a35 100%);
+    --modal-border: #6b3a5f;
+    --modal-title: #ff69b4;
+    --modal-text: #ffb6c1;
+    --modal-hover-bg: rgba(255, 255, 255, 0.1);
+    --shadow-color: rgba(255, 20, 147, 0.3);
+    --shadow-hover: rgba(255, 20, 147, 0.5);
+}
+
+/* =========================================
    Glamour Minesweeper 🍓 - Стили
    ========================================= */
 
@@ -15,22 +81,25 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #fff0f5 0%, #ffb6c1 100%);
+    background: var(--bg-gradient);
     font-family: 'VT323', monospace;
     overflow-x: auto;
     padding: 20px;
+    transition: background 0.3s ease;
 }
 
 /* Основной контейнер игры */
 .game-container {
-    background-color: #ffc0cb;
+    position: relative;
+    background-color: var(--container-bg);
     padding: 12px;
-    border-top: 4px solid #ffe4ec;
-    border-left: 4px solid #ffe4ec;
-    border-right: 4px solid #d97091;
-    border-bottom: 4px solid #d97091;
-    box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+    border-top: 4px solid var(--container-border-light);
+    border-left: 4px solid var(--container-border-light);
+    border-right: 4px solid var(--container-border-dark);
+    border-bottom: 4px solid var(--container-border-dark);
+    box-shadow: 0 10px 25px var(--shadow-color);
     border-radius: 4px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Верхняя панель */
@@ -40,11 +109,12 @@ body {
     align-items: center;
     padding: 8px;
     margin-bottom: 12px;
-    border-top: 3px solid #d97091;
-    border-left: 3px solid #d97091;
-    border-right: 3px solid #ffe4ec;
-    border-bottom: 3px solid #ffe4ec;
-    background-color: #ffb3c6;
+    border-top: 3px solid var(--container-border-dark);
+    border-left: 3px solid var(--container-border-dark);
+    border-right: 3px solid var(--container-border-light);
+    border-bottom: 3px solid var(--container-border-light);
+    background-color: var(--header-bg);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Счётчики (мины и время) */
@@ -68,67 +138,69 @@ body {
     width: 44px;
     height: 44px;
     font-size: 28px;
-    background-color: #ffc0cb;
+    background-color: var(--btn-bg);
     border: none;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-top: 3px solid #ffe4ec;
-    border-left: 3px solid #ffe4ec;
-    border-right: 3px solid #d97091;
-    border-bottom: 3px solid #d97091;
-    transition: transform 0.05s;
+    border-top: 3px solid var(--cell-border-light);
+    border-left: 3px solid var(--cell-border-light);
+    border-right: 3px solid var(--cell-border-dark);
+    border-bottom: 3px solid var(--cell-border-dark);
+    transition: transform 0.05s, background-color 0.3s ease;
 }
 
 .reset-btn:active {
-    border-top: 3px solid #d97091;
-    border-left: 3px solid #d97091;
-    border-right: 3px solid #ffe4ec;
-    border-bottom: 3px solid #ffe4ec;
+    border-top: 3px solid var(--cell-border-dark);
+    border-left: 3px solid var(--cell-border-dark);
+    border-right: 3px solid var(--cell-border-light);
+    border-bottom: 3px solid var(--cell-border-light);
     transform: translateY(1px);
 }
 
-/* Игровое поле (размеры задаются через JS) */
+/* Игровое поле */
 .grid {
     display: grid;
-    border-top: 4px solid #d97091;
-    border-left: 4px solid #d97091;
-    border-right: 4px solid #ffe4ec;
-    border-bottom: 4px solid #ffe4ec;
-    background-color: #d97091;
+    border-top: 4px solid var(--cell-border-dark);
+    border-left: 4px solid var(--cell-border-dark);
+    border-right: 4px solid var(--cell-border-light);
+    border-bottom: 4px solid var(--cell-border-light);
+    background-color: var(--grid-bg);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-/* Ячейка по умолчанию (закрытая) */
+/* Ячейка по умолчанию */
 .cell {
     width: 32px;
     height: 32px;
-    background-color: #ffb3c6;
+    background-color: var(--cell-bg);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
-    border-top: 3px solid #ffe4ec;
-    border-left: 3px solid #ffe4ec;
-    border-right: 3px solid #d97091;
-    border-bottom: 3px solid #d97091;
+    border-top: 3px solid var(--cell-border-light);
+    border-left: 3px solid var(--cell-border-light);
+    border-right: 3px solid var(--cell-border-dark);
+    border-bottom: 3px solid var(--cell-border-dark);
+    transition: background-color 0.2s ease, border-color 0.3s ease;
 }
 
 .cell:hover:not(.revealed):not(.flagged) {
-    background-color: #ffc8d6;
+    background-color: var(--cell-bg-hover);
 }
 
 .cell:active:not(.revealed):not(.flagged) {
-    border: 1px solid #d97091;
-    background-color: #ffd1dc;
+    border: 1px solid var(--cell-border-dark);
+    background-color: var(--cell-bg-active);
 }
 
 /* Открытая ячейка */
 .cell.revealed {
-    background-color: #ffd1dc;
-    border: 1px solid #e8a0b5;
+    background-color: var(--cell-bg-revealed);
+    border: 1px solid var(--cell-border-flat);
     cursor: default;
 }
 
@@ -142,7 +214,7 @@ body {
 
 /* Ячейка с миной (клубничка в шоколаде 🍫) */
 .cell.mine {
-    background-color: #ffd1dc;
+    background-color: var(--cell-bg-revealed);
 }
 
 .cell.mine::after {
@@ -187,37 +259,79 @@ body {
     font-family: 'VT323', monospace;
     font-size: 22px;
     padding: 10px 20px;
-    background-color: #ffc0cb;
-    color: #d97091;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
     border: none;
     cursor: pointer;
     border-radius: 4px;
-    border-top: 3px solid #ffe4ec;
-    border-left: 3px solid #ffe4ec;
-    border-right: 3px solid #d97091;
-    border-bottom: 3px solid #d97091;
-    transition: all 0.15s ease;
+    border-top: 3px solid var(--cell-border-light);
+    border-left: 3px solid var(--cell-border-light);
+    border-right: 3px solid var(--cell-border-dark);
+    border-bottom: 3px solid var(--cell-border-dark);
+    transition: all 0.15s ease, background-color 0.3s ease, color 0.3s ease;
     letter-spacing: 1px;
 }
 
 .diff-btn:hover {
-    background-color: #ffd1dc;
+    background-color: var(--btn-bg-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
+    box-shadow: 0 4px 10px var(--shadow-hover);
 }
 
 .diff-btn.active {
-    background-color: #ff69b4;
-    color: #fff;
-    border-top: 3px solid #d97091;
-    border-left: 3px solid #d97091;
-    border-right: 3px solid #ffe4ec;
-    border-bottom: 3px solid #ffe4ec;
+    background-color: var(--btn-bg-active);
+    color: var(--btn-text-active);
+    border-top: 3px solid var(--cell-border-dark);
+    border-left: 3px solid var(--cell-border-dark);
+    border-right: 3px solid var(--cell-border-light);
+    border-bottom: 3px solid var(--cell-border-light);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .diff-btn:active {
     transform: translateY(1px);
+}
+
+/* =========================================
+   Кнопка настроек и рекорд
+   ========================================= */
+
+.settings-btn {
+    position: absolute;
+    top: 12px;
+    right: -50px;
+    width: 36px;
+    height: 36px;
+    background-color: var(--btn-bg);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    border-top: 2px solid var(--cell-border-light);
+    border-left: 2px solid var(--cell-border-light);
+    border-right: 2px solid var(--cell-border-dark);
+    border-bottom: 2px solid var(--cell-border-dark);
+    transition: transform 0.2s, background-color 0.3s ease;
+}
+
+.settings-btn:hover {
+    transform: rotate(90deg);
+    background-color: var(--btn-bg-hover);
+}
+
+.record-display {
+    text-align: center;
+    margin-top: 12px;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--record-color);
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.record-display span {
+    color: var(--record-color-bold);
+    font-weight: bold;
 }
 
 /* =========================================
@@ -290,4 +404,132 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 999;
+}
+
+/* =========================================
+   Модальное окно настроек
+   ========================================= */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: var(--modal-bg);
+    padding: 30px;
+    border-radius: 16px;
+    min-width: 400px;
+    box-shadow: 0 20px 60px var(--shadow-color);
+    border: 3px solid var(--modal-border);
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), background 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--modal-title);
+    padding-bottom: 10px;
+}
+
+.modal-header h2 {
+    font-family: 'VT323', monospace;
+    font-size: 32px;
+    color: var(--modal-title);
+    margin: 0;
+    transition: color 0.3s ease;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: var(--modal-title);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--record-color-bold);
+    transform: scale(1.2);
+}
+
+.modal-body {
+    font-family: 'VT323', monospace;
+}
+
+.setting-group {
+    margin-bottom: 20px;
+}
+
+.setting-label {
+    display: block;
+    font-size: 22px;
+    color: var(--modal-title);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.setting-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    color: var(--modal-text);
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s, color 0.3s ease;
+}
+
+.radio-label:hover {
+    background-color: var(--modal-hover-bg);
+}
+
+.radio-label input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #ff1493;
+}
+
+.radio-label span {
+    font-size: 20px;
 }
