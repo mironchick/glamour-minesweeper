@@ -22,15 +22,22 @@
             </button>
             <div class="counter timer" id="timer">000</div>
         </header>
+        
         <div class="grid" id="grid"></div>
         
-        <!-- Кнопка настроек -->
+        <!-- Кнопки справа от поля (абсолютное позиционирование) -->
+        <button class="stats-btn" id="stats-btn" aria-label="Статистика">📊</button>
         <button class="settings-btn" id="settings-btn" aria-label="Настройки">⚙️</button>
         
         <!-- Отображение рекорда -->
         <div class="record-display" id="record-display">
             🏆 Рекорд: <span id="record-time">---</span>
         </div>
+
+        <!-- Кнопка продолжить сохранённую игру -->
+        <button class="continue-btn" id="continue-btn" style="display: none;">
+            ▶️ Продолжить сохранённую игру
+        </button>
     </div>
 
     <!-- Оверлей победы -->
@@ -53,8 +60,8 @@
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>⚙️ Настройки</h2>
-                <button class="modal-close" id="modal-close">&times;</button>
+                <h2>️ Настройки</h2>
+                <button class="modal-close" id="settings-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="setting-group">
@@ -80,11 +87,106 @@
                         </label>
                         <label class="radio-label">
                             <input type="radio" name="theme" value="dark">
-                            <span>🌙 Тёмная</span>
+                            <span> Тёмная</span>
                         </label>
                     </div>
                 </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">Тряска экрана при проигрыше:</label>
+                    <div class="setting-options">
+                        <label class="radio-label">
+                            <input type="radio" name="shake" value="on">
+                            <span>Включена</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="shake" value="off" checked>
+                            <span>Выключена</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">Автосохранение:</label>
+                    <div class="setting-options">
+                        <label class="radio-label">
+                            <input type="radio" name="autosave" value="on" checked>
+                            <span>Включено</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="autosave" value="off">
+                            <span>Выключено</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="clear-save-btn" id="clear-stats-btn">🗑️ Очистить статистику</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно статистики и достижений -->
+    <div class="modal" id="stats-modal">
+        <div class="modal-content stats-modal-content">
+            <div class="modal-header">
+                <h2>📊 Статистика</h2>
+                <button class="modal-close" id="stats-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-section">
+                    <h3 class="stats-title">📈 Общая статистика</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-total">0</div>
+                            <div class="stat-label">Всего игр</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-wins">0</div>
+                            <div class="stat-label">Побед</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-percent">0%</div>
+                            <div class="stat-label">Процент побед</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-streak">0</div>
+                            <div class="stat-label">Текущая серия</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-best-streak">0</div>
+                            <div class="stat-label">Лучшая серия</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <h3 class="stats-title">⏱️ Лучшие времена</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-best-basic">---</div>
+                            <div class="stat-label">🍓 Базовый гламур</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-best-luxury">---</div>
+                            <div class="stat-label">💎 Люксовый гламур</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <h3 class="stats-title">🏆 Достижения (<span id="achievements-count">0</span>/8)</h3>
+                    <div class="achievements-grid" id="achievements-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление о достижении -->
+    <div class="achievement-toast" id="achievement-toast">
+        <div class="toast-icon">🏆</div>
+        <div class="toast-content">
+            <div class="toast-title">Достижение получено!</div>
+            <div class="toast-name" id="toast-achievement-name"></div>
         </div>
     </div>
 
