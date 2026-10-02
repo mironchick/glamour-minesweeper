@@ -3,7 +3,7 @@
    ========================================= */
 
 :root {
-    /* Светлая тема (по умолчанию) */
+    --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath fill='%23ff69b4' fill-opacity='0.08' d='M30 45l-2.5-2.5C18 34 12 28 12 22c0-4 3-7 7-7 2.5 0 5 1.5 6.5 3.5L30 23l4.5-4.5C36 16.5 38.5 15 41 15c4 0 7 3 7 7 0 6-6 12-15.5 20.5L30 45z'/%3E%3C/svg%3E");
     --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #ffb6c1 100%);
     --container-bg: #ffc0cb;
     --container-border-light: #ffe4ec;
@@ -31,10 +31,13 @@
     --modal-hover-bg: rgba(255, 255, 255, 0.3);
     --shadow-color: rgba(255, 105, 180, 0.3);
     --shadow-hover: rgba(255, 105, 180, 0.4);
+    --stat-bg: rgba(255, 255, 255, 0.3);
+    --achievement-locked: rgba(0, 0, 0, 0.2);
+    --achievement-unlocked: rgba(255, 255, 255, 0.5);
 }
 
 body.dark-theme {
-    /* Тёмная гламурная тема */
+    --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath fill='%23ff1493' fill-opacity='0.06' d='M30 45l-2.5-2.5C18 34 12 28 12 22c0-4 3-7 7-7 2.5 0 5 1.5 6.5 3.5L30 23l4.5-4.5C36 16.5 38.5 15 41 15c4 0 7 3 7 7 0 6-6 12-15.5 20.5L30 45z'/%3E%3C/svg%3E");
     --bg-gradient: linear-gradient(135deg, #2d1b2e 0%, #1a0f1a 100%);
     --container-bg: #4a2040;
     --container-border-light: #6b3a5f;
@@ -62,11 +65,10 @@ body.dark-theme {
     --modal-hover-bg: rgba(255, 255, 255, 0.1);
     --shadow-color: rgba(255, 20, 147, 0.3);
     --shadow-hover: rgba(255, 20, 147, 0.5);
+    --stat-bg: rgba(255, 255, 255, 0.08);
+    --achievement-locked: rgba(0, 0, 0, 0.4);
+    --achievement-unlocked: rgba(255, 20, 147, 0.3);
 }
-
-/* =========================================
-   Glamour Minesweeper 🍓 - Стили
-   ========================================= */
 
 * {
     box-sizing: border-box;
@@ -81,7 +83,9 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: var(--bg-gradient);
+    background: var(--bg-pattern), var(--bg-gradient);
+    background-size: 60px 60px, auto;
+    background-repeat: repeat, no-repeat;
     font-family: 'VT323', monospace;
     overflow-x: auto;
     padding: 20px;
@@ -102,6 +106,17 @@ body {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+/* Тряска экрана */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+    20%, 40%, 60%, 80% { transform: translateX(6px); }
+}
+
+.game-container.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
 /* Верхняя панель */
 .game-header {
     display: flex;
@@ -117,7 +132,7 @@ body {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Счётчики (мины и время) */
+/* Счётчики */
 .counter {
     background-color: #1a1a1a;
     color: #ff1493;
@@ -170,7 +185,7 @@ body {
     transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-/* Ячейка по умолчанию */
+/* Ячейка */
 .cell {
     width: 32px;
     height: 32px;
@@ -197,14 +212,12 @@ body {
     background-color: var(--cell-bg-active);
 }
 
-/* Открытая ячейка */
 .cell.revealed {
     background-color: var(--cell-bg-revealed);
     border: 1px solid var(--cell-border-flat);
     cursor: default;
 }
 
-/* Ячейка с флажком (обычная клубничка 🍓) */
 .cell.flagged::after {
     content: "🍓";
     font-size: 24px;
@@ -212,7 +225,6 @@ body {
     transform: scale(0.9);
 }
 
-/* Ячейка с миной (клубничка в шоколаде 🍫) */
 .cell.mine {
     background-color: var(--cell-bg-revealed);
 }
@@ -224,7 +236,7 @@ body {
     transform: scale(0.95);
 }
 
-/* Цвета цифр */
+/* Цвета цифр - светлая тема */
 .cell.revealed[data-number="1"] { color: #0000ff; }
 .cell.revealed[data-number="2"] { color: #008000; }
 .cell.revealed[data-number="3"] { color: #ff0000; }
@@ -234,20 +246,25 @@ body {
 .cell.revealed[data-number="7"] { color: #000000; }
 .cell.revealed[data-number="8"] { color: #808080; }
 
-/* Состояние проигрыша */
+/* Цвета цифр - тёмная тема */
+body.dark-theme .cell.revealed[data-number="1"] { color: #87ceeb; }
+body.dark-theme .cell.revealed[data-number="2"] { color: #90ee90; }
+body.dark-theme .cell.revealed[data-number="3"] { color: #ff6b6b; }
+body.dark-theme .cell.revealed[data-number="4"] { color: #6495ed; }
+body.dark-theme .cell.revealed[data-number="5"] { color: #ffa07a; }
+body.dark-theme .cell.revealed[data-number="6"] { color: #40e0d0; }
+body.dark-theme .cell.revealed[data-number="7"] { color: #f0f0f0; }
+body.dark-theme .cell.revealed[data-number="8"] { color: #c0c0c0; }
+
 .game-container.game-over .cell.mine {
     background-color: #ff99aa;
 }
 
-/* Состояние победы */
-.game-container.game-won .reset-icon {
-    content: "😎";
+body.dark-theme .game-container.game-over .cell.mine {
+    background-color: #5a2a4f;
 }
 
-/* =========================================
-   Переключатель сложности
-   ========================================= */
-
+/* Переключатель сложности */
 .difficulty-selector {
     display: flex;
     gap: 12px;
@@ -292,30 +309,50 @@ body {
     transform: translateY(1px);
 }
 
-/* =========================================
-   Кнопка настроек и рекорд
-   ========================================= */
-
-.settings-btn {
+/* Кнопки справа от поля (абсолютное позиционирование) */
+.stats-btn {
     position: absolute;
     top: 12px;
-    right: -50px;
-    width: 36px;
-    height: 36px;
+    right: -60px;
+    width: 44px;
+    height: 44px;
     background-color: var(--btn-bg);
     border: none;
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
-    border-top: 2px solid var(--cell-border-light);
-    border-left: 2px solid var(--cell-border-light);
-    border-right: 2px solid var(--cell-border-dark);
-    border-bottom: 2px solid var(--cell-border-dark);
+    border-top: 3px solid var(--cell-border-light);
+    border-left: 3px solid var(--cell-border-light);
+    border-right: 3px solid var(--cell-border-dark);
+    border-bottom: 3px solid var(--cell-border-dark);
+    transition: transform 0.2s, background-color 0.3s ease;
+}
+
+.stats-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--btn-bg-hover);
+}
+
+.settings-btn {
+    position: absolute;
+    top: 70px;
+    right: -60px;
+    width: 44px;
+    height: 44px;
+    background-color: var(--btn-bg);
+    border: none;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    border-top: 3px solid var(--cell-border-light);
+    border-left: 3px solid var(--cell-border-light);
+    border-right: 3px solid var(--cell-border-dark);
+    border-bottom: 3px solid var(--cell-border-dark);
     transition: transform 0.2s, background-color 0.3s ease;
 }
 
 .settings-btn:hover {
-    transform: rotate(90deg);
+    transform: scale(1.1);
     background-color: var(--btn-bg-hover);
 }
 
@@ -334,10 +371,29 @@ body {
     font-weight: bold;
 }
 
-/* =========================================
-   Оверлеи победы/поражения
-   ========================================= */
+.continue-btn {
+    display: block;
+    margin: 12px auto 0;
+    padding: 10px 20px;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    background-color: var(--btn-bg-active);
+    color: var(--btn-text-active);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    border-top: 3px solid var(--cell-border-dark);
+    border-left: 3px solid var(--cell-border-dark);
+    border-right: 3px solid var(--cell-border-light);
+    border-bottom: 3px solid var(--cell-border-light);
+    transition: transform 0.15s;
+}
 
+.continue-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Оверлеи */
 .overlay {
     position: fixed;
     top: 0;
@@ -395,7 +451,6 @@ body {
     font-size: 48px;
 }
 
-/* Canvas для конфетти */
 #confetti-canvas {
     position: fixed;
     top: 0;
@@ -406,10 +461,7 @@ body {
     z-index: 999;
 }
 
-/* =========================================
-   Модальное окно настроек
-   ========================================= */
-
+/* Модальные окна */
 .modal {
     position: fixed;
     top: 0;
@@ -436,6 +488,9 @@ body {
     padding: 30px;
     border-radius: 16px;
     min-width: 400px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 20px 60px var(--shadow-color);
     border: 3px solid var(--modal-border);
     transform: scale(0.8);
@@ -444,6 +499,10 @@ body {
 
 .modal.show .modal-content {
     transform: scale(1);
+}
+
+.stats-modal-content {
+    min-width: 500px;
 }
 
 .modal-header {
@@ -532,4 +591,153 @@ body {
 
 .radio-label span {
     font-size: 20px;
+}
+
+.clear-save-btn {
+    width: 100%;
+    padding: 10px;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: 2px solid var(--cell-border-dark);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+.clear-save-btn:hover {
+    background-color: var(--btn-bg-hover);
+    color: var(--record-color-bold);
+}
+
+/* Статистика и достижения */
+.stats-section {
+    margin-bottom: 24px;
+}
+
+.stats-title {
+    font-family: 'VT323', monospace;
+    font-size: 26px;
+    color: var(--modal-title);
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--cell-border-dark);
+    padding-bottom: 6px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+с
+.stat-item {
+    background-color: var(--stat-bg);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid var(--cell-border-dark);
+}
+
+.stat-value {
+    font-family: 'VT323', monospace;
+    font-size: 32px;
+    color: var(--record-color-bold);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 16px;
+    color: var(--modal-text);
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.achievement-item {
+    background-color: var(--stat-bg);
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid var(--cell-border-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.achievement-item.unlocked {
+    background-color: var(--achievement-unlocked);
+    border-color: var(--record-color-bold);
+}
+
+.achievement-item.locked {
+    opacity: 0.5;
+    filter: grayscale(0.7);
+}
+
+.achievement-icon {
+    font-size: 32px;
+    width: 40px;
+    text-align: center;
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-name {
+    font-size: 18px;
+    color: var(--modal-title);
+    font-weight: bold;
+}
+
+.achievement-desc {
+    font-size: 14px;
+    color: var(--modal-text);
+}
+
+/* Уведомление о достижении */
+.achievement-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(200px);
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+    color: #fff;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(255, 20, 147, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 3000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none;
+    border: 2px solid #fff;
+}
+
+.achievement-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-icon {
+    font-size: 36px;
+}
+
+.toast-title {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.toast-name {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    font-weight: bold;
 }
