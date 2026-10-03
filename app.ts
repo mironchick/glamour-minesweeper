@@ -10,10 +10,10 @@ const MODES = {
 const ACHIEVEMENTS: AchievementDef[] = [
     { id: 'first_win', name: 'Первая победа', desc: 'Выиграй первую игру', icon: '🎉' },
     { id: 'win_60', name: 'Быстрый гламур', desc: 'Победа за 60 секунд', icon: '⚡' },
-    { id: 'win_45', name: 'Молниеносный', desc: 'Победа за 45 секунд', icon: '🌩️' },
-    { id: 'win_30', name: 'Скоростной', desc: 'Победа за 30 секунд', icon: '💨' },
-    { id: 'streak_5', name: 'Серия побед', desc: '5 побед подряд', icon: '' },
-    { id: 'streak_10', name: 'Неудержимая', desc: '10 побед подряд', icon: '💎' },
+    { id: 'win_45', name: 'Скоростной', desc: 'Победа за 45 секунд', icon: '⚡' },
+    { id: 'win_30', name: 'Молниеносный', desc: 'Победа за 30 секунд', icon: '⚡' },
+    { id: 'streak_5', name: 'Серия побед', desc: '5 побед подряд', icon: '🎉' },
+    { id: 'streak_10', name: 'Неудержимый', desc: '10 побед подряд', icon: '🎉' },
     { id: 'basic_complete', name: 'Базовый гламур', desc: 'Первая победа на базовом режиме', icon: '🍓' },
     { id: 'luxury_complete', name: 'Люксовый гламур', desc: 'Первая победа на люксовом режиме', icon: '💎' }
 ];
